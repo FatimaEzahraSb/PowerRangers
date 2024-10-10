@@ -38,7 +38,7 @@ const useSignup = () => {
       }
 
       //if the user is signed in we add the user info to the localstorage
-      localStorage.setItem("chat-user", JSON.stringify(data));
+      localStorage.setItem("user-info", JSON.stringify(data));
       // we set it so that the entire app can access  the user's info
       setAuthUser(data);
 

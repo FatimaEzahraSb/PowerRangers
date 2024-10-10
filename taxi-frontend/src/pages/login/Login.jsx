@@ -1,8 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import bgImg from "../../assets/bg-image.png";
 import { FcGoogle } from "react-icons/fc";
+import useLogin from "../../hooks/useLogin";
 
 const Login = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const { loading, login } = useLogin();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await login({ username, password });
+  };
+
   return (
     <div className="w-full h-full bg-gradient flex flex-row items-center justify-between p-40">
       <div className="hidden md:flex flex-1 min-w-[435px] h-[800px]  items-center bg-white">
@@ -21,7 +32,7 @@ const Login = () => {
       {/* The form starts from here */}
       <div className="flex flex-col flex-1 min-w-[435px] h-[800px] justify-center items-center bg-white">
         <h2 className="text-3xl font-extrabold">Log In</h2>
-        <form className="p-9 w-3/4">
+        <form className="p-9 w-3/4" onSubmit={handleSubmit}>
           <div className="space-y-4 flex flex-col items-center justify-center mt-2">
             <label className="input input-bordered flex items-center gap-2 w-full">
               <svg
@@ -35,7 +46,9 @@ const Login = () => {
               <input
                 type="text"
                 className="grow"
-                placeholder="Username or Email"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </label>
             <label className="input input-bordered flex items-center gap-2 w-full">
@@ -51,7 +64,13 @@ const Login = () => {
                   clipRule="evenodd"
                 />
               </svg>
-              <input type="password" className="grow" placeholder="Password" />
+              <input
+                type="password"
+                className="grow"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </label>
 
             <button className="btn btn-active btn-neutral w-full h-3">
