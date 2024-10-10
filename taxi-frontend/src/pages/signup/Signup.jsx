@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import bgImg from "../../assets/bg-image.png";
 import { FcGoogle } from "react-icons/fc";
 import useSignup from "../../hooks/useSignup";
+import { Link } from "react-router-dom";
 
 const Signup = () => {
   const [inputs, setInputs] = useState({
@@ -140,6 +141,10 @@ const Signup = () => {
               <FcGoogle />
               SignUp with Google
             </button>
+
+            <Link to={"/login"} className="link link-primary text-sm">
+              Sign In to your Account ?
+            </Link>
           </div>
         </form>
       </div>

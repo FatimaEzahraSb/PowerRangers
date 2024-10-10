@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import bgImg from "../../assets/bg-image.png";
 import { FcGoogle } from "react-icons/fc";
 import useLogin from "../../hooks/useLogin";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -83,6 +84,9 @@ const Login = () => {
               <FcGoogle />
               LogIn with Google
             </button>
+            <Link to="/signup" className="link link-primary text-sm">
+              Create an account !
+            </Link>
           </div>
         </form>
       </div>
