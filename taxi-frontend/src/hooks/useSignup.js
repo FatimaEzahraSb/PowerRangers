@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { json } from "react-router-dom";
+import { useAuthContext } from "../context/AuthContext";
 
 const useSignup = () => {
   const [loading, setLoading] = useState(false);
 
-  const signup = ({ email, username, password, confirmPassword }) => {
+  const { authUser, setAuthUser } = useAuthContext();
+
+  const signup = async ({ email, username, password, confirmPassword }) => {
     const success = handleInputErrors({
       email,
       username,
@@ -16,25 +19,35 @@ const useSignup = () => {
 
     setLoading(true);
 
-    // try {
-    //   const res = await fetch("the backend url", {
-    //     method: "POST",
-    //     headers: { "Content-type": "application/json" },
-    //     body: JSON.stringify({
-    //       email,
-    //       username,
-    //       password,
-    //       confirmPassword,
-    //     }),
-    //   });
+    try {
+      const res = await fetch("the backend url", {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify({
+          email,
+          username,
+          password,
+          confirmPassword,
+        }),
+      });
 
-    //   const response = await res.json();
-    //   console.log(response);
-    // } catch (error) {
-    //   toast.error(error.message);
-    // } finally {
-    //   setLoading(false);
-    // }
+      const data = await res.json();
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      //if the user is signed in we add the user info to the localstorage
+      localStorage.setItem("chat-user", JSON.stringify(data));
+      // we set it so that the entire app can access  the user's info
+      setAuthUser(data);
+
+      console.log(response);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
   return { loading, signup };
 };
