@@ -5,14 +5,14 @@ import useLogin from "../../hooks/useLogin";
 import { Link } from "react-router-dom";
 
 const Login = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const { loading, login } = useLogin();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await login({ username, password });
+    await login({ email, password });
   };
 
   return (
@@ -47,9 +47,9 @@ const Login = () => {
               <input
                 type="text"
                 className="grow"
-                placeholder="Username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </label>
             <label className="input input-bordered flex items-center gap-2 w-full">

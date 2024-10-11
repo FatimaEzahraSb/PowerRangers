@@ -5,6 +5,11 @@ import useSignup from "../../hooks/useSignup";
 import { Link } from "react-router-dom";
 
 const Signup = () => {
+  // const logGoogleUser = async () => {
+  //   const response = await signInWithGooglePopup();
+  //   console.log(response);
+  // };
+
   const [inputs, setInputs] = useState({
     email: "",
     username: "",
@@ -12,7 +17,7 @@ const Signup = () => {
     confirmPassword: "",
   });
 
-  const { loading, signup } = useSignup();
+  const { loading, signup, logGoogleUser } = useSignup();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -32,7 +37,7 @@ const Signup = () => {
             alt="background"
           />
           <p className="absolute inset-0 flex items-center justify-center text-white text-xl font-bold">
-            Log In to your account
+            Create an account
           </p>
         </div>
       </div>
@@ -131,22 +136,20 @@ const Signup = () => {
               />
             </label>
 
-            <button className="btn btn-active btn-neutral w-full h-3">
-              Sign In
+            <button className="btn btn-active btn-neutral w-full h-3 hover:shadow-md hover:shadow-black">
+              Sign Up
             </button>
 
             <p>or</p>
-
-            <button className="btn w-full">
-              <FcGoogle />
-              SignUp with Google
-            </button>
-
-            <Link to={"/login"} className="link link-primary text-sm">
-              Sign In to your Account ?
-            </Link>
           </div>
         </form>
+        <button className="btn w-1/2" onClick={logGoogleUser}>
+          <FcGoogle />
+          SignUp with Google
+        </button>
+        <Link to={"/login"} className="link link-primary text-sm">
+          Log In to your Account ?
+        </Link>
       </div>
     </div>
   );
