@@ -1,42 +1,11 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import { json } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
-import {
-  createUserWithEmailAndPasswordAuth,
-  signInWithGooglePopup,
-} from "../utils/firebase.utils";
-import { sendEmailVerification } from "firebase/auth";
 
 const useSignup = () => {
   const [loading, setLoading] = useState(false);
 
-  const { authUser, setAuthUser } = useAuthContext();
-
-  const logGoogleUser = async () => {
-    const response = await signInWithGooglePopup();
-    const user = response.user;
-    // Extract email and username (displayName)
-    const email = user.email;
-    const username = user.displayName;
-    const uid = user.uid;
-    console.log(response.user);
-    try {
-      const res = await fetch("the backend url", {
-        method: "POST",
-        headers: { "Content-type": "application/json" },
-        body: JSON.stringify({
-          email,
-          username,
-          uid,
-        }),
-      });
-
-      const data = await res.json();
-    } catch (error) {
-      toast.error(error.message);
-    }
-  };
+  const { setAuthUser } = useAuthContext();
 
   const signup = async ({ email, username, password, confirmPassword }) => {
     const success = handleInputErrors({
@@ -50,59 +19,38 @@ const useSignup = () => {
     setLoading(true);
 
     try {
-      // Firebase Authentication signing up for the first time
-      const userCredential = await createUserWithEmailAndPasswordAuth(
-        email,
-        password
-      );
-      const user = userCredential.user;
-      console.log("User signed in:", userCredential.user);
-
-      // Get the Firebase ID token if sign-in was successful
-      const idToken = await userCredential.user.getIdToken();
-
-      // Send a verification email to the user
-      await sendEmailVerification(user);
-      console.log("Verification email sent");
-
-      const res = await fetch("the backend url", {
-        method: "POST",
-        headers: { "Content-type": "application/json" },
+      // Envoi des données d'inscription à l'API backend (users_api)
+      const res = await fetch("http://127.0.0.1:5001/users/register", {
+        method: "POST", // Route d'inscription (POST)
+        headers: {
+          "Content-type": "application/json",
+        },
         body: JSON.stringify({
           email,
           username,
           password,
-          confirmPassword,
         }),
       });
 
       const data = await res.json();
+      console.log(data);
 
-      if (data.error) {
-        throw new Error(data.error);
-      }
-
-      //if the user is signed in we add the user info to the localstorage
-      localStorage.setItem("user-info", JSON.stringify(data));
-      // we set it so that the entire app can access  the user's info
-      setAuthUser(data);
-      toast.success("A verification email has been sent to your email !");
-    } catch (error) {
-      // Check for specific error codes
-      if (error.code === "auth/email-already-in-use") {
-        console.error("Email is already in use");
-        toast.error(
-          "This email is already registered. Please use a different email or log in."
-        );
+      if (res.ok) {
+        // Si l'inscription réussit, on enregistre les infos de l'utilisateur
+        localStorage.setItem("user-info", JSON.stringify(data));
+        setAuthUser(data); // On stocke les infos utilisateur dans le contexte global
+        toast.success("User registered successfully!");
       } else {
-        console.error("Sign-up error:", error.message);
-        toast.error(error.message); // Show the error message
+        throw new Error(data.error || "Signup failed");
       }
+    } catch (error) {
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
   };
-  return { loading, signup, logGoogleUser };
+
+  return { loading, signup };
 };
 
 export default useSignup;
@@ -110,12 +58,10 @@ export default useSignup;
 function handleInputErrors({ email, username, password, confirmPassword }) {
   if (!email?.trim() || !username?.trim() || !password || !confirmPassword) {
     toast.error("Please fill in all fields");
-    console.log("EMPTY");
-
     return false;
   }
 
-  //   email validation
+  // Validation de l'email
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -125,9 +71,8 @@ function handleInputErrors({ email, username, password, confirmPassword }) {
     return false;
   }
 
-  //   password validation
+  // Validation des mots de passe
   if (password !== confirmPassword) {
-    console.log("not match");
     toast.error("Passwords do not match");
     return false;
   }
